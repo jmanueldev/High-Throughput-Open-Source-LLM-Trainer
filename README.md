@@ -1,25 +1,25 @@
-# High-Throughput-Open-Source-LLM-Trainer
-High-Throughput Open-Source LLM Trainer: Built a minimal, hyper-optimized PyTorch pre-training harness supporting Megatron-style tensor parallelism and FP8 precision 
+# High-Throughput Open-Source LLM Trainer
 
-A self-contained, production-grade PyTorch pre-training harness featuring Megatron-style Tensor Parallelism (TP), Transformer Engine FP8 autocast, and a custom distributed training loop.
+A minimal, hyper-optimized PyTorch pre-training harness featuring Megatron-style Tensor Parallelism (TP) and NVIDIA Transformer Engine FP8 precision execution.
 
-Key System Architecture Highlights
+## Features
 
-    Megatron-Style Parallel Operators:
+- **Megatron-style Tensor Parallelism**: Custom CUDA/NCCL autograd functions (`_CopyToModelParallelRegion` and `_ReduceFromModelParallelRegion`) implementing split column and row parallel linear projections.
+- **FP8 Mixed Precision**: Integrated `transformer_engine.pytorch` using HYBRID FP8 format (`E4M3` forward, `E5M2` backward) with delayed scaling.
+- **Scaled Dot-Product Attention**: Native FlashAttention implementation via PyTorch Fused Kernels.
 
-        ColumnParallelLinear: Splits weights along columns and duplicates activation tensor forward passes while accumulating gradients in backward passes via all_reduce.
+## Getting Started
 
-        RowParallelLinear: Splits weights along rows and performs spatial all_reduce summation across ranks to sync output states.
+### Prerequisites
 
-    NVIDIA Transformer Engine (TE) FP8 Integration:
+Ensure you have NVIDIA drivers and CUDA Toolkit installed on Hopper/Ada architecture GPUs (e.g., H100, L40S) for native FP8 support.
 
-        Utilizes te.Linear and te.fp8_autocast using HYBRID FP8 Format (E4M3 forward pass for precision, E5M2 backward pass for gradient dynamic range). Includes delayed scaling for overflow prevention.
+```bash
+pip install -r requirements.txt
+```
+## Launch Training
 
-    Optimized Attention Kernel:
-
-        Integrates PyTorch's native scaled_dot_product_attention for scaled FlashAttention execution under reduced precision.
-
-Execution Command
-
-Launch across 4 GPUs via torchrun:
-torchrun --nproc_per_node=4 train.py
+Make the launcher script executable and start pre-training across available GPUs:
+```bash
+chmod +x launch.sh
+./launch.sh 4  # Launches on 4 GPUs

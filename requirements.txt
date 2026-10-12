@@ -1,0 +1,5 @@
+torch>=2.2.0
+transformer-engine>=1.5.0
+triton>=2.2.0
+einops>=0.7.0
+numpy>=1.24.0
